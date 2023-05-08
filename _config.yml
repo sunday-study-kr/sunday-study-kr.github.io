@@ -1,0 +1,46 @@
+# Basic
+name:               "Sunday Study"
+description:        "일요일 오전에 진행하는 온라인 스터디"
+
+# jekyll-seo-tag, see: http://www.rubydoc.info/gems/jekyll-seo-tag/1.2.0
+url:                "//kiko.gfjaru.com"
+author:             "sunday-study-kr"
+
+# URL
+baseurl:            ""
+#baseurl:            "" #For Root Domain
+permalink:          /:year/:month/:day/:title/
+
+# Markdown
+markdown:           kramdown
+
+# Navigation
+nav:
+  - name:           "Github"
+    remote:         true
+    href:           "//github.com/sunday-study-kr"
+  - name:           "Notion"
+    remote:         true
+    href:           "//github.com/gfjaru/Kiko/releases"
+
+# Sass
+sass:
+  style:            :compressed
+
+# Scopes
+defaults:
+  -
+    scope:
+      path:         ""
+      type:         "pages"
+    values:
+      layout:       "page"
+  -
+    scope:
+      path:         ""
+      type:         "posts"
+    values:
+      layout:       "post"
+
+gems:
+  - jekyll-seo-tag
