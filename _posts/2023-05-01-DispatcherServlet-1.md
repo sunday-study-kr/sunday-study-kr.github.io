@@ -43,18 +43,14 @@
 ### HttpServlet( Abstract Class)
 
 ```java
-protected void doGet(HttpServletRequest req, HttpServletResponse resp)
-        throws ServletException, IOException
- {
-        String msg = lStrings.getString("http.method_get_not_supported");
-        sendMethodNotAllowed(req, resp, msg);
- }
+protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    String msg = lStrings.getString("http.method_get_not_supported");
+    sendMethodNotAllowed(req, resp, msg);
+}
 
-protected void doPost(HttpServletRequest req, HttpServletResponse resp)
-        throws ServletException, IOException 
-{
-        String msg = lStrings.getString("http.method_post_not_supported");
-        sendMethodNotAllowed(req, resp, msg);
+protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    String msg = lStrings.getString("http.method_post_not_supported");
+    sendMethodNotAllowed(req, resp, msg);
 }
 ```
 
@@ -123,26 +119,25 @@ protected void doPost(HttpServletRequest req, HttpServletResponse resp)
         
 
 ```java
-	@Override
-	protected void doService(HttpServletRequest request, HttpServletResponse response) throws Exception {
-		logRequest(request);
-		// attribute setting 
+@Override
+protected void doService(HttpServletRequest request, HttpServletResponse response) throws Exception {
+    logRequest(request);
+    // attribute setting 
 
-		try {
-			doDispatch(request, response); // 내부적으로 doDispatch 호출
-		}
-		finally {
-			if (!WebAsyncUtils.getAsyncManager(request).isConcurrentHandlingStarted()) {
-				// Restore the original attribute snapshot, in case of an include.
-				if (attributesSnapshot != null) {
-					restoreAttributesAfterInclude(request, attributesSnapshot);
-				}
-			}
-			if (this.parseRequestPath) {
-				ServletRequestPathUtils.setParsedRequestPath(previousRequestPath, request);
-			}
-		}
+    try {
+	doDispatch(request, response); // 내부적으로 doDispatch 호출
+    } finally {
+	if (!WebAsyncUtils.getAsyncManager(request).isConcurrentHandlingStarted()) {
+	    // Restore the original attribute snapshot, in case of an include.
+	    if (attributesSnapshot != null) {
+		restoreAttributesAfterInclude(request, attributesSnapshot);
+	    }
 	}
+	if (this.parseRequestPath) {
+	    ServletRequestPathUtils.setParsedRequestPath(previousRequestPath, request);
+	}
+    }
+}
 ```
 
 - doDispatch()
@@ -150,88 +145,81 @@ protected void doPost(HttpServletRequest req, HttpServletResponse resp)
 
 ```java
 protected void doDispatch(HttpServletRequest request, HttpServletResponse response) throws Exception {
-		HttpServletRequest processedRequest = request;
-		HandlerExecutionChain mappedHandler = null;
-		boolean multipartRequestParsed = false;
+        HttpServletRequest processedRequest = request;
+        HandlerExecutionChain mappedHandler = null;
+        boolean multipartRequestParsed = false;
 
-		WebAsyncManager asyncManager = WebAsyncUtils.getAsyncManager(request);
+        WebAsyncManager asyncManager = WebAsyncUtils.getAsyncManager(request);
 
-		try {
-			ModelAndView mv = null;
-			Exception dispatchException = null;
+        try {
+            ModelAndView mv = null;
+            Exception dispatchException = null;
 
-			try {
-				processedRequest = checkMultipart(request);
-				multipartRequestParsed = (processedRequest != request);
+            try {
+                processedRequest = checkMultipart(request);
+                multipartRequestParsed = (processedRequest != request);
 
-				// Determine handler for the current request.
-				mappedHandler = getHandler(processedRequest); // 적절한 Handler(Controller)를 찾음
-				if (mappedHandler == null) {
-					noHandlerFound(processedRequest, response);
-					return;
-				}
+                // Determine handler for the current request.
+                mappedHandler = getHandler(processedRequest); // 적절한 Handler(Controller)를 찾음
+                if (mappedHandler == null) {
+                    noHandlerFound(processedRequest, response);
+                    return;
+                }
 
-				// Determine handler adapter for the current request.
-				HandlerAdapter ha = getHandlerAdapter(mappedHandler.getHandler());
+                // Determine handler adapter for the current request.
+                HandlerAdapter ha = getHandlerAdapter(mappedHandler.getHandler());
 
-				// Process last-modified header, if supported by the handler.
-				// resource cache 여부 확인 , 동일한 request 재요청시에 대한 선 처리
-				String method = request.getMethod();
-				boolean isGet = HttpMethod.GET.matches(method);
-				if (isGet || HttpMethod.HEAD.matches(method)) {
-					long lastModified = ha.getLastModified(request, mappedHandler.getHandler());
-					if (new ServletWebRequest(request, response).checkNotModified(lastModified) && isGet) {
-						return;
-					}
-				}
-				// intercepter의 선 처리 ( 통과할 경우 true , 다음 작업 실행 )
-				if (!mappedHandler.applyPreHandle(processedRequest, response)) {
-					return;
-				}
+                // Process last-modified header, if supported by the handler.
+                // resource cache 여부 확인 , 동일한 request 재요청시에 대한 선 처리
+                String method = request.getMethod();
+                boolean isGet = HttpMethod.GET.matches(method);
+                if (isGet || HttpMethod.HEAD.matches(method)) {
+                    long lastModified = ha.getLastModified(request, mappedHandler.getHandler());
+                    if (new ServletWebRequest(request, response).checkNotModified(lastModified) && isGet) {
+                        return;
+                    }
+                }
+                // intercepter의 선 처리 ( 통과할 경우 true , 다음 작업 실행 )
+                if (!mappedHandler.applyPreHandle(processedRequest, response)) {
+                    return;
+                }
 
-				// Actually invoke the handler.
-				mv = ha.handle(processedRequest, response, mappedHandler.getHandler());
+                // Actually invoke the handler.
+                mv = ha.handle(processedRequest, response, mappedHandler.getHandler());
 
-				if (asyncManager.isConcurrentHandlingStarted()) {
-					return;
-				}
-				// view 를 찾고 model을 매핑 , @RestController일 경우 null이기 때문에 실행 x
-				applyDefaultViewName(processedRequest, mv);
-				// interceptor 의 후 처리
-				mappedHandler.applyPostHandle(processedRequest, response, mv);
-			}
-			catch (Exception ex) {
-				dispatchException = ex;
-			}
-			catch (Throwable err) {
-				// As of 4.3, we're processing Errors thrown from handler methods as well,
-				// making them available for @ExceptionHandler methods and other scenarios.
-				dispatchException = new NestedServletException("Handler dispatch failed", err);
-			}
-			processDispatchResult(processedRequest, response, mappedHandler, mv, dispatchException);
-		}
-		catch (Exception ex) {
-			triggerAfterCompletion(processedRequest, response, mappedHandler, ex);
-		}
-		catch (Throwable err) {
-			triggerAfterCompletion(processedRequest, response, mappedHandler,
-					new NestedServletException("Handler processing failed", err));
-		}
-		finally {
-			if (asyncManager.isConcurrentHandlingStarted()) {
-				// Instead of postHandle and afterCompletion
-				if (mappedHandler != null) {
-					mappedHandler.applyAfterConcurrentHandlingStarted(processedRequest, response);
-				}
-			}
-			else {
-				// Clean up any resources used by a multipart request.
-				if (multipartRequestParsed) {
-					cleanupMultipart(processedRequest);
-				}
-			}
-		}
-
+                if (asyncManager.isConcurrentHandlingStarted()) {
+                    return;
+                }
+                // view 를 찾고 model을 매핑 , @RestController일 경우 null이기 때문에 실행 x
+                applyDefaultViewName(processedRequest, mv);
+                // interceptor 의 후 처리
+                mappedHandler.applyPostHandle(processedRequest, response, mv);
+            } catch (Exception ex) {
+                dispatchException = ex;
+            } catch (Throwable err) {
+                // As of 4.3, we're processing Errors thrown from handler methods as well,
+                // making them available for @ExceptionHandler methods and other scenarios.
+                dispatchException = new NestedServletException("Handler dispatch failed", err);
+            }
+            processDispatchResult(processedRequest, response, mappedHandler, mv, dispatchException);
+        } catch (Exception ex) {
+            triggerAfterCompletion(processedRequest, response, mappedHandler, ex);
+        } catch (Throwable err) {
+            triggerAfterCompletion(processedRequest, response, mappedHandler,
+                new NestedServletException("Handler processing failed", err));
+        } finally {
+            if (asyncManager.isConcurrentHandlingStarted()) {
+                // Instead of postHandle and afterCompletion
+                if (mappedHandler != null) {
+                    mappedHandler.applyAfterConcurrentHandlingStarted(processedRequest, response);
+                }
+            } else {
+                // Clean up any resources used by a multipart request.
+                if (multipartRequestParsed) {
+                    cleanupMultipart(processedRequest);
+                }
+            }
+        }
 ```
 
 - getHandler()
@@ -239,16 +227,16 @@ protected void doDispatch(HttpServletRequest request, HttpServletResponse respon
 
 ```java
 protected HandlerExecutionChain getHandler(HttpServletRequest request) throws Exception {
-		if (this.handlerMappings != null) {
-			for (HandlerMapping mapping : this.handlerMappings) {
-				HandlerExecutionChain handler = mapping.getHandler(request);
-				if (handler != null) {
-					return handler;
-				}
-			}
-		}
-		return null;
-	}
+    if (this.handlerMappings != null) {
+        for (HandlerMapping mapping: this.handlerMappings) {
+            HandlerExecutionChain handler = mapping.getHandler(request);
+            if (handler != null) {
+                return handler;
+            }
+        }
+    }
+    return null;
+}
 ```
 
 - getHandlerApdater()
@@ -256,16 +244,16 @@ protected HandlerExecutionChain getHandler(HttpServletRequest request) throws Ex
 
 ```java
 protected HandlerAdapter getHandlerAdapter(Object handler) throws ServletException {
-		if (this.handlerAdapters != null) {
-			for (HandlerAdapter adapter : this.handlerAdapters) {
-				if (adapter.supports(handler)) {
-					return adapter;
-				}
-			}
-		}
-		throw new ServletException("No adapter for handler [" + handler +
-				"]: The DispatcherServlet configuration needs to include a HandlerAdapter that supports this handler");
-	}
+    if (this.handlerAdapters != null) {
+        for (HandlerAdapter adapter: this.handlerAdapters) {
+            if (adapter.supports(handler)) {
+                return adapter;
+            }
+        }
+    }
+    throw new ServletException("No adapter for handler [" + handler +
+        "]: The DispatcherServlet configuration needs to include a HandlerAdapter that supports this handler");
+}
 ```
 
 ```java
@@ -308,16 +296,16 @@ mv = ha.handle(processedRequest, response, mappedHandler.getHandler());
 
 ```java
 private void processDispatchResult(HttpServletRequest request, HttpServletResponse response,
-			@Nullable HandlerExecutionChain mappedHandler, @Nullable ModelAndView mv,
-			@Nullable Exception exception) throws Exception {
+    @Nullable HandlerExecutionChain mappedHandler, @Nullable ModelAndView mv,
+    @Nullable Exception exception) throws Exception {
 
-		// Did the handler return a view to render?
-		if (mv != null && !mv.wasCleared()) {
-			render(mv, request, response);
-			if (errorView) {
-				WebUtils.clearErrorRequestAttributes(request);
-			}
-		}
+    // Did the handler return a view to render?
+    if (mv != null && !mv.wasCleared()) {
+        render(mv, request, response);
+        if (errorView) {
+            WebUtils.clearErrorRequestAttributes(request);
+        }
+    }
 }
 ```
 
@@ -332,14 +320,14 @@ protected void render(
     View view;
     String viewName = mv.getViewName(); // view 의 논리 이름
     if (viewName != null) {
-				// view의 논리 이름 ViewResolver에 전달하여 물리 이름으로 변환 , View 객체를 반환받는다.
+        // view의 논리 이름 ViewResolver에 전달하여 물리 이름으로 변환 , View 객체를 반환받는다.
         view = resolveViewName(viewName, mv.getModelInternal(), locale, request);
     }
     try {
         if (mv.getStatus() != null) {
             response.setStatus(mv.getStatus().value());
         }
-				// 반환받은 view 객체에 model(data)를 매핑
+        // 반환받은 view 객체에 model(data)를 매핑
         view.render(mv.getModelInternal(), request, response);
     }
 }
@@ -349,12 +337,12 @@ protected void render(
 
 ```java
 @Nullable
-protected View resolveViewName(String viewName, @Nullable Map<String, Object> model,
-        Locale locale, HttpServletRequest request) throws Exception {
+protected View resolveViewName(String viewName, @Nullable Map < String, Object > model,
+    Locale locale, HttpServletRequest request) throws Exception {
 
     if (this.viewResolvers != null) {
-        for (ViewResolver viewResolver : this.viewResolvers) {
-						// view 이름을 바탕으로 viewResolver를 통해 view 객체를 반환
+        for (ViewResolver viewResolver: this.viewResolvers) {
+            // view 이름을 바탕으로 viewResolver를 통해 view 객체를 반환
             View view = viewResolver.resolveViewName(viewName, locale);
             if (view != null) {
                 return view;
@@ -370,29 +358,28 @@ protected View resolveViewName(String viewName, @Nullable Map<String, Object> mo
 ```java
 // doDispatch()
 if (asyncManager.isConcurrentHandlingStarted()) {
-				// Instead of postHandle and afterCompletion
-				if (mappedHandler != null) {
-					mappedHandler.applyAfterConcurrentHandlingStarted(processedRequest, response);
-				}
-			}
+    // Instead of postHandle and afterCompletion
+    if (mappedHandler != null) {
+        mappedHandler.applyAfterConcurrentHandlingStarted(processedRequest, response);
+    }
+}
 
 //applyAfterConcurrentHandlingStarted()
 void applyAfterConcurrentHandlingStarted(HttpServletRequest request, HttpServletResponse response) {
-		for (int i = this.interceptorList.size() - 1; i >= 0; i--) {
-			HandlerInterceptor interceptor = this.interceptorList.get(i);
-			if (interceptor instanceof AsyncHandlerInterceptor) {
-				try {
-					AsyncHandlerInterceptor asyncInterceptor = (AsyncHandlerInterceptor) interceptor;
-					asyncInterceptor.afterConcurrentHandlingStarted(request, response, this.handler);
-				}
-				catch (Throwable ex) {
-					if (logger.isErrorEnabled()) {
-						logger.error("Interceptor [" + interceptor + "] failed in afterConcurrentHandlingStarted", ex);
-					}
-				}
-			}
-		}
-	}
+    for (int i = this.interceptorList.size() - 1; i >= 0; i--) {
+        HandlerInterceptor interceptor = this.interceptorList.get(i);
+        if (interceptor instanceof AsyncHandlerInterceptor) {
+            try {
+                AsyncHandlerInterceptor asyncInterceptor = (AsyncHandlerInterceptor) interceptor;
+                asyncInterceptor.afterConcurrentHandlingStarted(request, response, this.handler);
+            } catch (Throwable ex) {
+                if (logger.isErrorEnabled()) {
+                    logger.error("Interceptor [" + interceptor + "] failed in afterConcurrentHandlingStarted", ex);
+                }
+            }
+        }
+    }
+}
 ```
 
 - 비동기 요청 시 afterConcurrentHandlingStarted가 수행됩니다.
