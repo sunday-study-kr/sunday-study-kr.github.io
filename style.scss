@@ -171,6 +171,7 @@ code {
   color: #bf616a;
   background-color: #f9f9f9;
   border-radius: 3px;
+  display: block;
 }
 
 pre {
@@ -185,6 +186,7 @@ pre {
   word-break: break-all;
   // word-wrap: break-word;
   background-color: #f9f9f9;
+  overflow: scroll;
 }
 
 pre code {
@@ -192,6 +194,7 @@ pre code {
   font-size: 100%;
   color: inherit;
   background-color: transparent;
+  min-width: 1200px;
 }
 
 .highlight {
