@@ -18,9 +18,7 @@
 
 - ServletContainer - per - process
 - 서블릿 컨테이너는 서블릿의 생명 주기를 관리하고  요청마다 쓰레드를 통해 처리(Thread - per - request)
-
-![Untitled](Dispatcher%20Servlet(1)%20-%20%E1%84%91%E1%85%B3%E1%84%85%E1%85%A9%E1%86%AB%E1%84%90%E1%85%B3%20%E1%84%8F%E1%85%A5%E1%86%AB%E1%84%90%E1%85%B3%E1%84%85%E1%85%A9%E1%86%AF%E1%84%85%E1%85%A5%20,%20%E1%84%83%E1%85%A9%E1%86%BC%E1%84%8C%E1%85%A1%20228a6cc066c341be9866984391a949f7/Untitled.png)
-
+![](img/Servlet1.png)
 - WAS(애플리케이션 서버)는 서블릿 컨테이너의 확장 개념
 
 > **서블릿 컨테이너는 오직 서블릿 API 만 지원**하는 것을 말한다 (JSP, JSTL 까지 포함해서)
@@ -29,12 +27,11 @@
 > **애플리케이션 서버는 Java EE (EJB, JMS, CDI, JTA, 서블릿 API) 의 전체를 지원**한다
 >
 
-![Untitled](Dispatcher%20Servlet(1)%20-%20%E1%84%91%E1%85%B3%E1%84%85%E1%85%A9%E1%86%AB%E1%84%90%E1%85%B3%20%E1%84%8F%E1%85%A5%E1%86%AB%E1%84%90%E1%85%B3%E1%84%85%E1%85%A9%E1%86%AF%E1%84%85%E1%85%A5%20,%20%E1%84%83%E1%85%A9%E1%86%BC%E1%84%8C%E1%85%A1%20228a6cc066c341be9866984391a949f7/Untitled%201.png)
+![](img/Servlet2.png)
 
 ### 서블릿 컨테이너에서 서블릿을 관리하는 과정
 
-![Untitled](Dispatcher%20Servlet(1)%20-%20%E1%84%91%E1%85%B3%E1%84%85%E1%85%A9%E1%86%AB%E1%84%90%E1%85%B3%20%E1%84%8F%E1%85%A5%E1%86%AB%E1%84%90%E1%85%B3%E1%84%85%E1%85%A9%E1%86%AF%E1%84%85%E1%85%A5%20,%20%E1%84%83%E1%85%A9%E1%86%BC%E1%84%8C%E1%85%A1%20228a6cc066c341be9866984391a949f7/Untitled%202.png)
-
+![](img/Servlet3.png)
 1. 사용자의 요청(url)에 대해 적절한 서블릿을 매핑
 2. 서블릿에 매핑되면 서블릿 컨테이너는 서블릿 인스턴스가 생성되었는지 체크하여 없을 경우 JVM에 의해 서블릿이 실행될 수 있도록 서블릿 인스턴스 생성
 3. 서블릿 컨테이너는 init → service → destroy 순으로 메소드 호출
@@ -82,7 +79,7 @@ protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws S
 
 </aside>
 
-![Untitled](Dispatcher%20Servlet(1)%20-%20%E1%84%91%E1%85%B3%E1%84%85%E1%85%A9%E1%86%AB%E1%84%90%E1%85%B3%20%E1%84%8F%E1%85%A5%E1%86%AB%E1%84%90%E1%85%B3%E1%84%85%E1%85%A9%E1%86%AF%E1%84%85%E1%85%A5%20,%20%E1%84%83%E1%85%A9%E1%86%BC%E1%84%8C%E1%85%A1%20228a6cc066c341be9866984391a949f7/Untitled%203.png)
+![](img/Servlet4.png)
 
 - 서블릿이다. (스프링 MVC의 중앙 서블릿)
     - 상속 형태 : DispatcherServlet → FrameworkServlet → HttpServletBean → HttpServlet
@@ -94,7 +91,7 @@ protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws S
 
 ### 동작 흐름
 
-![Untitled](Dispatcher%20Servlet(1)%20-%20%E1%84%91%E1%85%B3%E1%84%85%E1%85%A9%E1%86%AB%E1%84%90%E1%85%B3%20%E1%84%8F%E1%85%A5%E1%86%AB%E1%84%90%E1%85%B3%E1%84%85%E1%85%A9%E1%86%AF%E1%84%85%E1%85%A5%20,%20%E1%84%83%E1%85%A9%E1%86%BC%E1%84%8C%E1%85%A1%20228a6cc066c341be9866984391a949f7/Untitled%204.png)
+![](img/Servlet5.png)
 
 1. DispatcherServlet으로 request가 들어온다 . request → HttpServletRequest
 2. 공통 로직을 처리한 다음 HandlerMapping에 위임하여 요청을 처리할 Handler(Controller)를 찾는다.
