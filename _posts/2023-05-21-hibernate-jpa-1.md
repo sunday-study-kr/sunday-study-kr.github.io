@@ -69,7 +69,7 @@
 
 ![image](https://github.com/ohksj77/server-mentoring/assets/89020004/d102c522-75fc-476d-a476-16835fe5235c)
 
-- 사용자 어플리케이션에서 Session Factory에 Session 객체를 요청하면 Session Factory는 Configuration 정보를 사용하여 Session Object를 인스턴스화 한다.
+- 사용자 어플리케이션에서 Session Factory에 Session 객체를 요청하면 Session Factory는 Configuration 정보를 사용하여 Session Object를 인스턴스화 한다.
 
 > Most applications create a **Hibernate SessionFactory singleton that’s cached for the lifecycle of the app** because the object is resource-intensive to create.
 > 
@@ -80,7 +80,7 @@
 
 - 응용 프로그램과 데이터베이스 간의 상호작용을 나타낸다.
 - 세션의 인스턴스는 SessionFactory Bean으로 부터 생성된다.
-- 세션 객체는 응용 프로그램과 데이터베이스에 저장된 데이터 간의 인터페이스를 제공한다.
+- 세션 객체는 응용 프로그램과 데이터베이스에 저go장된 데이터 간의 인터페이스를 제공한다.
 - 수명이 짧은 객체이며 JDBC 연결을 래핑한다.
 - 데이터의 1 차 수준 캐시 (필수)를 보유한다.
 - org.hibernate.Session 인터페이스는 객체를 삽입, 갱신, 삭제하는 메소드를 제공한다.
